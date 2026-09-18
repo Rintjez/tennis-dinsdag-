@@ -355,19 +355,19 @@ function genereerOptimaleBanen() {
         document.getElementById('overlay-ronde-teller').innerText = `Ronde ${rondeNummer}`;
 
         let baanNummer = 1;
-        // Loop nu door de volledig aangevulde lijst (die nu gegarandeerd 4, 8, 12, etc. lang is)
+        // Loop door de poule in stappen van 4 spelers per baan
         for (let i = 0; i < tossPoule.length; i += 4) {
             let vierSpelers = tossPoule.slice(i, i + 4);
             
-            // Stuur de 4 specifieke spelers voor deze baan naar het rekenmodel
-            let opstelling = berekeneBaanOpties(vierSpelers[0], vierSpelers[1], vierSpelers[2], vierSpelers[3]);
+            // Stuur de array van 4 spelers naar de herstelde rekenfunctie
+            let opstelling = berekeneBaanOpties(vierSpelers);
 
             let p1 = opstelling[0]; 
             let p2 = opstelling[1]; 
             let p3 = opstelling[2]; 
             let p4 = opstelling[3];
 
-            // Sla de speelhistorie op (gasten slaan we over om matrix schoon te houden)
+            // Sla de speelhistorie op (gasten slaan we over)
             if (!p1.naam.includes("Gast") && !p2.naam.includes("Gast")) {
                 geschiedenisMatrix[p1.naam][p2.naam] = (geschiedenisMatrix[p1.naam][p2.naam] || 0) + 1;
                 geschiedenisMatrix[p2.naam][p1.naam] = (geschiedenisMatrix[p2.naam][p1.naam] || 0) + 1;
@@ -377,13 +377,12 @@ function genereerOptimaleBanen() {
                 geschiedenisMatrix[p4.naam][p3.naam] = (geschiedenisMatrix[p4.naam][p3.naam] || 0) + 1;
             }
 
-            // Schud de volgorde binnen de teams puur voor de visuele weergave op het scherm
             let team1Names = [p1.naam, p2.naam];
             let team2Names = [p3.naam, p4.naam];
             if (Math.random() > 0.5) team1Names.reverse();
             if (Math.random() > 0.5) team2Names.reverse();
 
-            // Render de baan met de twee unieke spelers per team
+            // HIER IS HET GEFIKST: We pakken [0] en [1] los om de dubbele namen en komma's te voorkomen
             banenContainer.innerHTML += `
                 <div class="court-title">Baan ${baanNummer}</div>
                 <div class="match-box">

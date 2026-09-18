@@ -7,7 +7,6 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="DinsdagTennis">
-    <link rel="apple-touch-icon" href="https://icons8.com">
     <style>
         :root {
             --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
@@ -26,8 +25,7 @@
         h1 { font-size: 32px; font-weight: 900; text-align: center; margin: 15px 0 25px 0; letter-spacing: -1px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
         h3 { font-size: 14px; color: var(--tennis-neon); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; font-weight: 800; }
         .app-page { display: none; } .app-page.active { display: block; }
-        
-        /* Premium Glazen Kaarten */
+
         .setup-section {
             background: var(--card-glass); padding: 20px; border-radius: 24px; margin-bottom: 20px;
             border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
@@ -39,9 +37,9 @@
             border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; font-size: 16px; outline: none; transition: all 0.2s;
         }
         input[type="text"]:focus, select:focus { border-color: var(--tennis-neon); box-shadow: 0 0 10px rgba(204,255,0,0.2); }
-        input[type="text"] { flex: 2; } select { flex: 1; text-align: center; }
-        .add-btn { background: var(--tennis-neon); color: #000; border: none; padding: 12px 22px; border-radius: 12px; font-weight: 800; font-size: 20px; box-shadow: 0 4px 15px rgba(204,255,0,0.3); }
-        
+        input[type="text"] { flex: 2; width: 100%; box-sizing: border-box; } select { flex: 1; text-align: center; }
+        .add-btn { background: var(--tennis-neon); color: #000; border: none; padding: 12px 22px; border-radius: 12px; font-weight: 800; font-size: 20px; box-shadow: 0 4px 15px rgba(204,255,0,0.3); cursor: pointer; }
+
         .player-list { list-style: none; padding: 0; margin: 0; }
         .player-item {
             display: flex; align-items: center; background: rgba(255, 255, 255, 0.02); padding: 14px 18px;
@@ -49,22 +47,16 @@
         }
         .player-info { flex-grow: 1; margin-left: 16px; display: flex; justify-content: space-between; align-items: center; }
         .player-name { font-size: 18px; font-weight: 600; letter-spacing: -0.3px; }
-        
-        /* Modern iOS-stijl Schakelaar */
-        .checkbox-custom {
-            width: 26px; height: 26px; accent-color: var(--tennis-neon); cursor: pointer; transform: scale(1.1);
-        }
-        .remove-btn { background: rgba(255, 71, 87, 0.15); color: var(--accent-red); border: none; border-radius: 10px; padding: 8px 14px; font-weight: 700; font-size: 13px; }
-        
-        /* Glinsterende Hoofdknop */
+        .checkbox-custom { width: 26px; height: 26px; accent-color: var(--tennis-neon); cursor: pointer; transform: scale(1.1); }
+        .remove-btn { background: rgba(255, 71, 87, 0.15); color: var(--accent-red); border: none; border-radius: 10px; padding: 8px 14px; font-weight: 700; font-size: 13px; cursor: pointer; }
+
         button.main-btn {
             width: 100%; padding: 18px; background: linear-gradient(90deg, #ccff00, #aee600); color: #000; border: none;
             border-radius: 18px; font-size: 18px; font-weight: 800; margin-bottom: 14px; letter-spacing: 0.5px;
-            box-shadow: 0 8px 25px rgba(204, 255, 0, 0.3); transition: all 0.2s; -webkit-tap-highlight-color: transparent;
+            box-shadow: 0 8px 25px rgba(204, 255, 0, 0.3); transition: all 0.2s; -webkit-tap-highlight-color: transparent; cursor: pointer;
         }
         button.main-btn:active { transform: scale(0.97); box-shadow: 0 4px 10px rgba(204, 255, 0, 0.2); }
-        
-        /* Scorebord Overlay */
+
         .result-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.98);
             color: var(--text-main); display: none; flex-direction: column; justify-content: center;
@@ -79,29 +71,32 @@
         .vs { font-weight: 900; color: var(--accent-red); font-size: 16px; display: block; margin: 12px 0; letter-spacing: 4px; }
         .close-tip { margin-top: 50px; font-size: 13px; color: var(--text-muted); font-style: italic; animation: pulse 2.5s infinite; text-transform: uppercase; letter-spacing: 1px; }
         @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.9; } }
-        
-        /* Premium Tab-bar */
+
         .tab-bar {
             position: fixed; bottom: 0; left: 0; right: 0; height: 68px; background: rgba(30, 41, 59, 0.9);
             border-top: 1px solid rgba(255, 255, 255, 0.08); display: flex; justify-content: space-around;
             align-items: center; box-shadow: 0 -10px 30px rgba(0,0,0,0.5); z-index: 1000;
             padding-bottom: env(safe-area-inset-bottom); backdrop-filter: blur(10px);
         }
-        .tab-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); background: none; border: none; width: 50%; height: 100%; justify-content: center; font-size: 12px; font-weight: 600; -webkit-tap-highlight-color: transparent; }
+        .tab-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); background: none; border: none; width: 50%; height: 100%; justify-content: center; font-size: 12px; font-weight: 600; -webkit-tap-highlight-color: transparent; cursor: pointer; }
         .tab-item.active { color: var(--tennis-neon); font-weight: 800; }
         .tab-icon { font-size: 24px; margin-bottom: 4px; }
         .level-badge { font-size: 12px; background: rgba(204, 255, 0, 0.1); color: var(--tennis-neon); padding: 5px 10px; border-radius: 10px; font-weight: 700; border: 1px solid rgba(204, 255, 0, 0.2); }
     </style>
 </head>
 <body>
+
 <div id="result-screen" class="result-overlay" onclick="sluitResultatenScherm()">
     <div class="result-title">🏆 BAANINDELING</div>
     <div id="overlay-ronde-teller" class="result-subtitle">Ronde 1</div>
     <div id="overlay-banen-container" style="width:100%; display:flex; flex-direction:column; align-items:center;"></div>
     <div class="close-tip">Tik ergens om terug te gaan</div>
 </div>
+
 <div class="container">
     <h1>🎾 Dinsdag tennis</h1>
+    
+    <!-- TOSS SCHERM -->
     <div id="page-toss" class="app-page active">
         <div class="setup-section">
             <h3>Wie spelen er vandaag mee?</h3>
@@ -109,8 +104,10 @@
             <div id="player-count" style="font-weight: 800; margin-top: 18px; font-size: 15px; text-align: center; color: var(--tennis-neon); letter-spacing: 0.5px;">Aantal aanwezig: 0</div>
         </div>
         <button class="main-btn" onclick="genereerOptimaleBanen()">GENEREER VOLGENDE RONDE</button>
-        <button class="main-btn" style="background: rgba(255,255,255,0.05); color: var(--text-main); box-shadow: none; border: 1px solid rgba(255,255,255,0.1);" onclick="resetHistorie()">Wis Geheugen/Rondes</button>
+        <button class="main-btn" style="background: rgba(255,255,255,0.05); color: var(--text-main); box-shadow: none; border: 1px solid rgba(255,255,255,0.1);" onclick="resetHistorie()">WIS GEHEUGEN / RONDES</button>
     </div>
+
+    <!-- SPELERSBEHEER SCHERM -->
     <div id="page-manage" class="app-page">
         <div class="setup-section">
             <h3>Nieuwe speler toevoegen</h3>
@@ -132,6 +129,7 @@
         </div>
     </div>
 </div>
+
 <div class="tab-bar">
     <button class="tab-item active" id="tab-toss" onclick="wisselScherm('toss')">
         <span class="tab-icon">🏆</span><span>Toss</span>
@@ -139,9 +137,7 @@
     <button class="tab-item" id="tab-manage" onclick="wisselScherm('manage')">
         <span class="tab-icon">⚙️</span><span>Spelersbeheer</span>
     </button>
-</div>
-<script>
-    // Jouw 7 vaste basisleden met hun exacte speelsterktes
+</div><script>
     const basisSpelers = [
         { id: 1, naam: "Alexander", niveau: 6, actief: true },
         { id: 2, naam: "Rintje", niveau: 7, actief: true },
@@ -209,7 +205,7 @@
         });
         const countDiv = document.getElementById('player-count');
         countDiv.textContent = `Aanwezig geselecteerd: ${aantalActief} speler(s)`;
-        countDiv.style.color = (aantalActief === 4 || aantalActief === 8) ? 'var(--tennis-neon)' : 'var(--accent-red)';
+        countDiv.style.color = (aantalActief > 0 && aantalActief % 4 === 0) ? 'var(--tennis-neon)' : 'var(--accent-red)';
     }
 
     function toggleSpeler(id) {
@@ -237,9 +233,13 @@
             spelers = spelers.filter(s => s.id !== id);
             slaDataOp(); updateSpelersLijst();
         }
-    }function initialiseerGeschiedenis(tossPoule) {
+    }
+
+    function initialiseerGeschiedenis(tossPoule) {
         tossPoule.forEach(s1 => {
-            if (!geschiedenisMatrix[s1.naam]) geschiedenisMatrix[s1.naam] = {};
+            if (!geschiedenisMatrix[s1.naam]) {
+                geschiedenisMatrix[s1.naam] = {};
+            }
             tossPoule.forEach(s2 => {
                 if (s1.naam !== s2.naam && geschiedenisMatrix[s1.naam][s2.naam] === undefined) {
                     geschiedenisMatrix[s1.naam][s2.naam] = 0;
@@ -250,135 +250,124 @@
 
     function berekeneBaanOpties(p1, p2, p3, p4) {
         let combinaties = [
-            { p1: p1, p2: p2, p3: p3, p4: p4 },
-            { p1: p1, p2: p3, p3: p2, p4: p4 },
-            { p1: p1, p2: p4, p3: p2, p4: p3 }
+            { t1p1: p1, t1p2: p2, t2p1: p3, t2p2: p4 },
+            { t1p1: p1, t1p2: p3, t2p1: p2, t2p2: p4 },
+            { t1p1: p1, t1p2: p4, t2p1: p2, t2p2: p3 }
         ];
 
-        let besteBaanOpstelling = null;
-        let laagsteStraf = Infinity;
+        let goedgekeurdeOpties = [];
 
         combinaties.forEach(optie => {
-            let st1 = optie.p1.niveau + optie.p2.niveau;
-            let st2 = optie.p3.niveau + optie.p4.niveau;
+            let st1 = optie.t1p1.niveau + optie.t1p2.niveau;
+            let st2 = optie.t2p1.niveau + optie.t2p2.niveau;
             let krachtsVerschil = Math.abs(st1 - st2);
 
-            let niveauStraf = krachtsVerschil > 2 ? krachtsVerschil * 100 : krachtsVerschil * 5;
-
-            let p1_p2_historie = (geschiedenisMatrix[optie.p1.naam]?.[optie.p2.naam] || 0);
-            let p3_p4_historie = (geschiedenisMatrix[optie.p3.naam]?.[optie.p4.naam] || 0);
-            
-            let historieStraf = (p1_p2_historie + p3_p4_historie) * 500;
-            let totaleBaanStraf = niveauStraf + historieStraf;
-
-            if (totaleBaanStraf < laagsteStraf) {
-                laagsteStraf = totaleBaanStraf;
-                besteBaanOpstelling = [optie.p1, optie.p2, optie.p3, optie.p4];
+            if (krachtsVerschil <= 2) {
+                let p1_p2_historie = (geschiedenisMatrix[optie.t1p1.naam]?.[optie.t1p2.naam] || 0);
+                let p3_p4_historie = (geschiedenisMatrix[optie.t2p1.naam]?.[optie.t2p2.naam] || 0);
+                
+                optie.historieStraf = (p1_p2_historie + p3_p4_historie);
+                optie.krachtsVerschil = krachtsVerschil;
+                goedgekeurdeOpties.push(optie);
             }
         });
 
-        return besteBaanOpstelling;
+        if (goedgekeurdeOpties.length === 0) {
+            combinaties.forEach(optie => {
+                let st1 = optie.t1p1.niveau + optie.t1p2.niveau;
+                let st2 = optie.t2p1.niveau + optie.t2p2.niveau;
+                optie.historieStraf = ((geschiedenisMatrix[optie.t1p1.naam]?.[optie.t1p2.naam] || 0) + (geschiedenisMatrix[optie.t2p1.naam]?.[optie.t2p2.naam] || 0));
+                optie.krachtsVerschil = Math.abs(st1 - st2);
+                goedgekeurdeOpties.push(optie);
+            });
+        }
+
+        goedgekeurdeOpties.sort((a, b) => {
+            if (a.historieStraf !== b.historieStraf) return a.historieStraf - b.historieStraf;
+            return a.krachtsVerschil - b.krachtsVerschil;
+        });
+
+        let besteScore = goedgekeurdeOpties[0].historieStraf;
+        let besteKrachtsVerschil = goedgekeurdeOpties[0].krachtsVerschil;
+        
+        let allerbesteKeuzes = goedgekeurdeOpties.filter(o => o.historieStraf === besteScore && o.krachtsVerschil === besteKrachtsVerschil);
+        let gekozenMatch = allerbesteKeuzes[Math.floor(Math.random() * allerbesteKeuzes.length)];
+
+        return [gekozenMatch.t1p1, gekozenMatch.t1p2, gekozenMatch.t2p1, gekozenMatch.t2p2];
     }
 
     function genereerOptimaleBanen() {
         let actieveSpelers = spelers.filter(s => s.actief);
-        let aantalAanwezig = actieveSpelers.length;
-        if (aantalAanwezig === 0) { alert("Vink eerst aan wie er aanwezig zijn!"); return; }
+        
+        if (actieveSpelers.length === 0) {
+            return alert("Vink eerst aan wie er aanwezig zijn!");
+        }
 
-        let aantalBanen = aantalAanwezig <= 4 ? 1 : 2;
-        let benodigdeSpelers = aantalBanen * 4;
-        let gastenToegevoegd = 0; let tossPoule = [...actieveSpelers];
+        let tossPoule = JSON.parse(JSON.stringify(actieveSpelers));
+        let benodigdeSpelers = Math.ceil(tossPoule.length / 4) * 4;
+        if (benodigdeSpelers < 4) benodigdeSpelers = 4;
 
+        let gastTeller = 1;
         while (tossPoule.length < benodigdeSpelers) {
-            gastenToegevoegd++;
-            tossPoule.push({ id: `gast-${gastenToegevoegd}`, naam: `Gast ${gastenToegevoegd}`, niveau: 7 });
+            tossPoule.push({
+                id: `gast-${gastTeller}`,
+                naam: `Gast ${gastTeller}`,
+                niveau: 7,
+                actief: true
+            });
+            gastTeller++;
         }
 
         initialiseerGeschiedenis(tossPoule);
-        
-        let besteTotaalSchema = null;
-        let laagsteTotaalStraf = Infinity;
+        tossPoule.sort((a, b) => a.niveau - b.niveau);
 
-        for (let i = 0; i < 1000; i++) {
-            let kandidaat = [...tossPoule];
-            for (let j = kandidaat.length - 1; j > 0; j--) {
-                const k = Math.floor(Math.random() * (j + 1));
-                [kandidaat[j], kandidaat[k]] = [kandidaat[k], kandidaat[j]];
+        let banenContainer = document.getElementById('overlay-banen-container');
+        banenContainer.innerHTML = '';
+        rondeNummer++;
+        document.getElementById('overlay-ronde-teller').innerText = `Ronde ${rondeNummer}`;
+
+        let baanNummer = 1;
+        for (let i = 0; i < tossPoule.length; i += 4) {
+            let vierSpelers = tossPoule.slice(i, i + 4);
+            let opstelling = berekeneBaanOpties(vierSpelers[0], vierSpelers[1], vierSpelers[2], vierSpelers[3]);
+
+            let p1 = opstelling[0]; let p2 = opstelling[1]; let p3 = opstelling[2]; let p4 = opstelling[3];
+
+            if (!p1.naam.includes("Gast") && !p2.naam.includes("Gast")) {
+                geschiedenisMatrix[p1.naam][p2.naam] = (geschiedenisMatrix[p1.naam][p2.naam] || 0) + 1;
+                geschiedenisMatrix[p2.naam][p1.naam] = (geschiedenisMatrix[p2.naam][p1.naam] || 0) + 1;
+            }
+            if (!p3.naam.includes("Gast") && !p4.naam.includes("Gast")) {
+                geschiedenisMatrix[p3.naam][p4.naam] = (geschiedenisMatrix[p3.naam][p4.naam] || 0) + 1;
+                geschiedenisMatrix[p4.naam][p3.naam] = (geschiedenisMatrix[p4.naam][p3.naam] || 0) + 1;
             }
 
-            let tijdelijkSchema = [];
-            let totaleGeschiedenisStraf = 0;
+            let team1Names = [p1.naam, p2.naam];
+            let team2Names = [p3.naam, p4.naam];
+            if (Math.random() > 0.5) team1Names.reverse();
+            if (Math.random() > 0.5) team2Names.reverse();
 
-            for (let b = 0; b < aantalBanen; b++) {
-                let offset = b * 4;
-                let optimaleBaanIndeling = berekeneBaanOpties(kandidaat[offset], kandidaat[offset+1], kandidaat[offset+2], kandidaat[offset+3]);
-                tijdelijkSchema.push(...optimaleBaanIndeling);
-            }
-
-            for (let b = 0; b < aantalBanen; b++) {
-                let offset = b * 4;
-                totaleGeschiedenisStraf += (geschiedenisMatrix[tijdelijkSchema[offset].naam]?.[tijdelijkSchema[offset+2].naam] || 0) * 5;
-                totaleGeschiedenisStraf += (geschiedenisMatrix[tijdelijkSchema[offset].naam]?.[tijdelijkSchema[offset+3].naam] || 0) * 5;
-                totaleGeschiedenisStraf += (geschiedenisMatrix[tijdelijkSchema[offset+1].naam]?.[tijdelijkSchema[offset+2].naam] || 0) * 5;
-                totaleGeschiedenisStraf += (geschiedenisMatrix[tijdelijkSchema[offset+1].naam]?.[tijdelijkSchema[offset+3].naam] || 0) * 5;
-            }
-
-            if (aantalBanen === 2) {
-                let b1_totaal = tijdelijkSchema.niveau + tijdelijkSchema.niveau + tijdelijkSchema.niveau + tijdelijkSchema.niveau;
-                let b2_totaal = tijdelijkSchema.niveau + tijdelijkSchema.niveau + tijdelijkSchema.niveau + tijdelijkSchema.niveau;
-                totaleGeschiedenisStraf += Math.abs(b1_totaal - b2_totaal) * 10;
-            }
-
-            if (totaleGeschiedenisStraf < laagsteTotaalStraf) {
-                laagsteTotaalStraf = totaleGeschiedenisStraf;
-                besteTotaalSchema = tijdelijkSchema;
-            }
-        }
-
-        updateGeschiedenis(besteTotaalSchema, aantalBanen); rondeNummer++; slaDataOp();
-        document.getElementById('overlay-ronde-teller').textContent = `Ronde ${rondeNummer}`;
-
-        let indelingHtml = '';
-        for (let b = 0; b < aantalBanen; b++) {
-            let offset = b * 4;
-            indelingHtml += `
-                <div class="court-title">Baan ${b + 1}</div>
+            banenContainer.innerHTML += `
+                <div class="court-title">Baan ${baanNummer}</div>
                 <div class="match-box">
-                    <strong>${besteTotaalSchema[offset].naam} (st. ${besteTotaalSchema[offset].niveau}) & ${besteTotaalSchema[offset+1].naam} (st. ${besteTotaalSchema[offset+1].niveau})</strong>
+                    <strong>${team1Names[0]} & ${team1Names[1]}</strong>
                     <span class="vs">VS</span>
-                    <strong>${besteTotaalSchema[offset+2].naam} (st. ${besteTotaalSchema[offset+2].niveau}) & ${besteTotaalSchema[offset+3].naam} (st. ${besteTotaalSchema[offset+3].niveau})</strong>
+                    <strong>${team2Names[0]} & ${team2Names[1]}</strong>
                 </div>
             `;
+            baanNummer++;
         }
-        
-        document.getElementById('overlay-banen-container').innerHTML = indelingHtml;
-        document.getElementById('result-screen').classList.add('active');
-    }
 
-    function updateGeschiedenis(schema, banenAantal) {
-        function registreer(p1, p2) {
-            if (!p1 || !p2 || p1.naam === p2.naam) return;
-            if (!geschiedenisMatrix[p1.naam]) { geschiedenisMatrix[p1.naam] = {}; }
-            geschiedenisMatrix[p1.naam][p2.naam] = (geschiedenisMatrix[p1.naam][p2.naam] || 0) + 1;
-            if (!geschiedenisMatrix[p2.naam]) { geschiedenisMatrix[p2.naam] = {}; }
-            geschiedenisMatrix[p2.naam][p1.naam] = (geschiedenisMatrix[p2.naam][p1.naam] || 0) + 1;
-        }
-        for (let b = 0; b < banenAantal; b++) {
-            let offset = b * 4;
-            registreer(schema[offset], schema[offset+1]);
-            registreer(schema[offset+2], schema[offset+3]);
-            registreer(schema[offset], schema[offset+2]);
-            registreer(schema[offset], schema[offset+3]);
-            registreer(schema[offset+1], schema[offset+2]);
-            registreer(schema[offset+1], schema[offset+3]);
-        }
+        document.getElementById('result-screen').classList.add('active');
+        slaDataOp();
     }
 
     function resetHistorie() {
-        if(confirm("Geheugen en rondes wissen?")) {
-            geschiedenisMatrix = {}; rondeNummer = 0; 
-            localStorage.removeItem('tennis_historie');
-            localStorage.setItem('tennis_ronde', '0');
+        if(confirm("Weet je zeker dat je alle historie en de rondeteller wilt resetten naar Ronde 1?")) {
+            rondeNummer = 0;
+            geschiedenisMatrix = {};
+            slaDataOp();
+            alert("Geheugen en rondeteller succesvol gewist!");
             updateSpelersLijst();
         }
     }

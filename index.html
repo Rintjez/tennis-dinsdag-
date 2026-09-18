@@ -37,7 +37,7 @@
             border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; font-size: 16px; outline: none; transition: all 0.2s;
         }
         input[type="text"]:focus, select:focus { border-color: var(--tennis-neon); box-shadow: 0 0 10px rgba(204,255,0,0.2); }
-        input[type="text"] { flex: 2; width: 100%; box-sizing: border-box; } select { flex: 1; text-align: center; }
+        input[type="text"] { flex: 2; width: 100%; box-sizing: border-box; } select { flex: 1; text-align: center; color: white; }
         .add-btn { background: var(--tennis-neon); color: #000; border: none; padding: 12px 22px; border-radius: 12px; font-weight: 800; font-size: 20px; box-shadow: 0 4px 15px rgba(204,255,0,0.3); cursor: pointer; }
 
         .player-list { list-style: none; padding: 0; margin: 0; }
@@ -47,7 +47,7 @@
         }
         .player-info { flex-grow: 1; margin-left: 16px; display: flex; justify-content: space-between; align-items: center; }
         .player-name { font-size: 18px; font-weight: 600; letter-spacing: -0.3px; }
-        .checkbox-custom { width: 26px; height: 26px; accent-color: var(--tennis-neon); cursor: pointer; transform: scale(1.1); }
+         .checkbox-custom { width: 26px; height: 26px; accent-color: var(--tennis-neon); cursor: pointer; transform: scale(1.1); }
         .remove-btn { background: rgba(255, 71, 87, 0.15); color: var(--accent-red); border: none; border-radius: 10px; padding: 8px 14px; font-weight: 700; font-size: 13px; cursor: pointer; }
 
         button.main-btn {
@@ -137,7 +137,8 @@
     <button class="tab-item" id="tab-manage" onclick="wisselScherm('manage')">
         <span class="tab-icon">⚙️</span><span>Spelersbeheer</span>
     </button>
-</div><script>
+</div>
+<script>
     const basisSpelers = [
         { id: 1, naam: "Alexander", niveau: 6, actief: true },
         { id: 2, naam: "Rintje", niveau: 7, actief: true },
@@ -148,17 +149,25 @@
         { id: 7, naam: "Durk", niveau: 8, actief: true }
     ];
 
-    let spelers = JSON.parse(localStorage.getItem('tennis_spelers')) || basisSpelers;
+    let spelers;
+    try {
+        let opgeslagenSpelers = localStorage.getItem('tennis_spelers');
+        if (opgeslagenSpelers) spelers = JSON.parse(opgeslagenSpelers);
+    } catch(e) { console.error("Geheugen corrupt"); }
+    
+    if (!spelers || !Array.isArray(spelers) || spelers.length === 0) {
+        spelers = JSON.parse(JSON.stringify(basisSpelers));
+    }
+
     let geschiedenisMatrix = {};
     try {
         let opgeslagenHistorie = localStorage.getItem('tennis_historie');
-        if (opgeslagenHistorie) {
-            geschiedenisMatrix = JSON.parse(opgeslagenHistorie);
-            if (typeof geschiedenisMatrix === 'string') {
-                geschiedenisMatrix = JSON.parse(geschiedenisMatrix);
-            }
-        }
+        if (opgeslagenHistorie) geschiedenisMatrix = JSON.parse(opgeslagenHistorie);
     } catch(e) { geschiedenisMatrix = {}; }
+    
+    if (typeof geschiedenisMatrix !== 'object' || geschiedenisMatrix === null) {
+        geschiedenisMatrix = {};
+    }
     
     let rondeNummer = parseInt(localStorage.getItem('tennis_ronde')) || 0;
 
@@ -234,12 +243,9 @@
             slaDataOp(); updateSpelersLijst();
         }
     }
-
-    function initialiseerGeschiedenis(tossPoule) {
+     function initialiseerGeschiedenis(tossPoule) {
         tossPoule.forEach(s1 => {
-            if (!geschiedenisMatrix[s1.naam]) {
-                geschiedenisMatrix[s1.naam] = {};
-            }
+            if (!geschiedenisMatrix[s1.naam]) geschiedenisMatrix[s1.naam] = {};
             tossPoule.forEach(s2 => {
                 if (s1.naam !== s2.naam && geschiedenisMatrix[s1.naam][s2.naam] === undefined) {
                     geschiedenisMatrix[s1.naam][s2.naam] = 0;
@@ -248,30 +254,26 @@
         });
     }
 
-    function berekeneBaanOpties(p1, p2, p3, p4) {
+    function berekeneBaanOpties(baanSpelers) {
+        let p1 = baanSpelers[0]; let p2 = baanSpelers[1]; let p3 = baanSpelers[2]; let p4 = baanSpelers[3];
         let combinaties = [
             { t1p1: p1, t1p2: p2, t2p1: p3, t2p2: p4 },
             { t1p1: p1, t1p2: p3, t2p1: p2, t2p2: p4 },
             { t1p1: p1, t1p2: p4, t2p1: p2, t2p2: p3 }
         ];
-
         let goedgekeurdeOpties = [];
-
         combinaties.forEach(optie => {
             let st1 = optie.t1p1.niveau + optie.t1p2.niveau;
             let st2 = optie.t2p1.niveau + optie.t2p2.niveau;
             let krachtsVerschil = Math.abs(st1 - st2);
-
             if (krachtsVerschil <= 2) {
                 let p1_p2_historie = (geschiedenisMatrix[optie.t1p1.naam]?.[optie.t1p2.naam] || 0);
                 let p3_p4_historie = (geschiedenisMatrix[optie.t2p1.naam]?.[optie.t2p2.naam] || 0);
-                
                 optie.historieStraf = (p1_p2_historie + p3_p4_historie);
                 optie.krachtsVerschil = krachtsVerschil;
                 goedgekeurdeOpties.push(optie);
             }
         });
-
         if (goedgekeurdeOpties.length === 0) {
             combinaties.forEach(optie => {
                 let st1 = optie.t1p1.niveau + optie.t1p2.niveau;
@@ -281,72 +283,32 @@
                 goedgekeurdeOpties.push(optie);
             });
         }
-
         goedgekeurdeOpties.sort((a, b) => {
             if (a.historieStraf !== b.historieStraf) return a.historieStraf - b.historieStraf;
             return a.krachtsVerschil - b.krachtsVerschil;
         });
-
         let besteScore = goedgekeurdeOpties[0].historieStraf;
         let besteKrachtsVerschil = goedgekeurdeOpties[0].krachtsVerschil;
-        
         let allerbesteKeuzes = goedgekeurdeOpties.filter(o => o.historieStraf === besteScore && o.krachtsVerschil === besteKrachtsVerschil);
         let gekozenMatch = allerbesteKeuzes[Math.floor(Math.random() * allerbesteKeuzes.length)];
-
         return [gekozenMatch.t1p1, gekozenMatch.t1p2, gekozenMatch.t2p1, gekozenMatch.t2p2];
     }
 
     function genereerOptimaleBanen() {
         let actieveSpelers = spelers.filter(s => s.actief);
+        if (actieveSpelers.length === 0) return alert("Vink eerst aan wie er aanwezig zijn!");
         
-        if (actieveSpelers.length === 0) {
-            return alert("Vink eerst aan wie er aanwezig zijn!");
-        }
-
         let tossPoule = JSON.parse(JSON.stringify(actieveSpelers));
         let benodigdeSpelers = Math.ceil(tossPoule.length / 4) * 4;
         if (benodigdeSpelers < 4) benodigdeSpelers = 4;
 
         let gastTeller = 1;
         while (tossPoule.length < benodigdeSpelers) {
-            tossPoule.push({
-                id: `gast-${gastTeller}`,
-                naam: `Gast ${gastTeller}`,
-                niveau: 7,
-                actief: true
-            });
-            gastTeller++;
-        }
-function genereerOptimaleBanen() {
-        let actieveSpelers = spelers.filter(s => s.actief);
-        
-        if (actieveSpelers.length === 0) {
-            return alert("Vink eerst aan wie er aanwezig zijn!");
-        }
-
-        // Maak een diepe kopie van de geselecteerde spelers
-        let tossPoule = JSON.parse(JSON.stringify(actieveSpelers));
-        
-        // Bereken exact hoeveel spelers er in totaal nodig zijn (altijd een veelvoud van 4)
-        let benodigdeSpelers = Math.ceil(tossPoule.length / 4) * 4;
-        if (benodigdeSpelers < 4) benodigdeSpelers = 4;
-
-        // VUL AUTOMATISCH AAN: Voeg échte gast-objecten toe aan de poule tot we het juiste aantal hebben
-        let gastTeller = 1;
-        while (tossPoule.length < benodigdeSpelers) {
-            tossPoule.push({
-                id: `gast-${gastTeller}`,
-                naam: `Gast ${gastTeller}`,
-                niveau: 7,
-                actief: true
-            });
+            tossPoule.push({ id: `gast-${gastTeller}`, naam: `Gast ${gastTeller}`, niveau: 7, actief: true });
             gastTeller++;
         }
 
-        // Zorg dat de geschiedenis-matrix ook voor de gasten netjes klaarstaat
         initialiseerGeschiedenis(tossPoule);
-        
-        // Sorteer alle spelers (inclusief gasten) op niveau om evenwichtige banen te creëren
         tossPoule.sort((a, b) => a.niveau - b.niveau);
 
         let banenContainer = document.getElementById('overlay-banen-container');
@@ -355,19 +317,12 @@ function genereerOptimaleBanen() {
         document.getElementById('overlay-ronde-teller').innerText = `Ronde ${rondeNummer}`;
 
         let baanNummer = 1;
-        // Loop door de poule in stappen van 4 spelers per baan
         for (let i = 0; i < tossPoule.length; i += 4) {
             let vierSpelers = tossPoule.slice(i, i + 4);
-            
-            // Stuur de array van 4 spelers naar de herstelde rekenfunctie
             let opstelling = berekeneBaanOpties(vierSpelers);
 
-            let p1 = opstelling[0]; 
-            let p2 = opstelling[1]; 
-            let p3 = opstelling[2]; 
-            let p4 = opstelling[3];
+            let p1 = opstelling[0]; let p2 = opstelling[1]; let p3 = opstelling[2]; let p4 = opstelling[3];
 
-            // Sla de speelhistorie op (gasten slaan we over)
             if (!p1.naam.includes("Gast") && !p2.naam.includes("Gast")) {
                 geschiedenisMatrix[p1.naam][p2.naam] = (geschiedenisMatrix[p1.naam][p2.naam] || 0) + 1;
                 geschiedenisMatrix[p2.naam][p1.naam] = (geschiedenisMatrix[p2.naam][p1.naam] || 0) + 1;
@@ -377,23 +332,21 @@ function genereerOptimaleBanen() {
                 geschiedenisMatrix[p4.naam][p3.naam] = (geschiedenisMatrix[p4.naam][p3.naam] || 0) + 1;
             }
 
-            let team1Names = [p1.naam, p2.naam];
-            let team2Names = [p3.naam, p4.naam];
-            if (Math.random() > 0.5) team1Names.reverse();
-            if (Math.random() > 0.5) team2Names.reverse();
+            let t1Names = [p1.naam, p2.naam];
+            let t2Names = [p3.naam, p4.naam];
+            if (Math.random() > 0.5) t1Names.reverse();
+            if (Math.random() > 0.5) t2Names.reverse();
 
-            // HIER IS HET GEFIKST: We pakken [0] en [1] los om de dubbele namen en komma's te voorkomen
             banenContainer.innerHTML += `
                 <div class="court-title">Baan ${baanNummer}</div>
                 <div class="match-box">
-                    <strong>${team1Names[0]} & ${team1Names[1]}</strong>
+                    <strong>${t1Names[0]} & ${t1Names[1]}</strong>
                     <span class="vs">VS</span>
-                    <strong>${team2Names[0]} & ${team2Names[1]}</strong>
+                    <strong>${t2Names[0]} & ${t2Names[1]}</strong>
                 </div>
             `;
             baanNummer++;
         }
-
         document.getElementById('result-screen').classList.add('active');
         slaDataOp();
     }

@@ -237,10 +237,10 @@
             spelers = spelers.filter(s => s.id !== id);
             slaDataOp(); updateSpelersLijst();
         }
-    } function initialiseerGeschiedenis(alleSpelers) {
-        alleSpelers.forEach(s1 => {
+    }function initialiseerGeschiedenis(tossPoule) {
+        tossPoule.forEach(s1 => {
             if (!geschiedenisMatrix[s1.naam]) geschiedenisMatrix[s1.naam] = {};
-            alleSpelers.forEach(s2 => {
+            tossPoule.forEach(s2 => {
                 if (s1.naam !== s2.naam && geschiedenisMatrix[s1.naam][s2.naam] === undefined) {
                     geschiedenisMatrix[s1.naam][s2.naam] = 0;
                 }
@@ -324,8 +324,8 @@
             }
 
             if (aantalBanen === 2) {
-                let b1_totaal = tijdelijkSchema[0].niveau + tijdelijkSchema[1].niveau + tijdelijkSchema[2].niveau + tijdelijkSchema[3].niveau;
-                let b2_totaal = tijdelijkSchema[4].niveau + tijdelijkSchema[5].niveau + tijdelijkSchema[6].niveau + tijdelijkSchema[7].niveau;
+                let b1_totaal = tijdelijkSchema.niveau + tijdelijkSchema.niveau + tijdelijkSchema.niveau + tijdelijkSchema.niveau;
+                let b2_totaal = tijdelijkSchema.niveau + tijdelijkSchema.niveau + tijdelijkSchema.niveau + tijdelijkSchema.niveau;
                 totaleGeschiedenisStraf += Math.abs(b1_totaal - b2_totaal) * 10;
             }
 
@@ -346,7 +346,7 @@
                 <div class="match-box">
                     <strong>${besteTotaalSchema[offset].naam} (st. ${besteTotaalSchema[offset].niveau}) & ${besteTotaalSchema[offset+1].naam} (st. ${besteTotaalSchema[offset+1].niveau})</strong>
                     <span class="vs">VS</span>
-                    <strong>${besteSchema || besteTotaalSchema[offset+2].naam} (st. ${besteTotaalSchema[offset+2].niveau}) & ${besteTotaalSchema[offset+3].naam} (st. ${besteTotaalSchema[offset+3].niveau})</strong>
+                    <strong>${besteTotaalSchema[offset+2].naam} (st. ${besteTotaalSchema[offset+2].niveau}) & ${besteTotaalSchema[offset+3].naam} (st. ${besteTotaalSchema[offset+3].niveau})</strong>
                 </div>
             `;
         }

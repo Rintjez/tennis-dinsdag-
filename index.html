@@ -317,8 +317,36 @@
             });
             gastTeller++;
         }
+function genereerOptimaleBanen() {
+        let actieveSpelers = spelers.filter(s => s.actief);
+        
+        if (actieveSpelers.length === 0) {
+            return alert("Vink eerst aan wie er aanwezig zijn!");
+        }
 
+        // Maak een diepe kopie van de geselecteerde spelers
+        let tossPoule = JSON.parse(JSON.stringify(actieveSpelers));
+        
+        // Bereken exact hoeveel spelers er in totaal nodig zijn (altijd een veelvoud van 4)
+        let benodigdeSpelers = Math.ceil(tossPoule.length / 4) * 4;
+        if (benodigdeSpelers < 4) benodigdeSpelers = 4;
+
+        // VUL AUTOMATISCH AAN: Voeg échte gast-objecten toe aan de poule tot we het juiste aantal hebben
+        let gastTeller = 1;
+        while (tossPoule.length < benodigdeSpelers) {
+            tossPoule.push({
+                id: `gast-${gastTeller}`,
+                naam: `Gast ${gastTeller}`,
+                niveau: 7,
+                actief: true
+            });
+            gastTeller++;
+        }
+
+        // Zorg dat de geschiedenis-matrix ook voor de gasten netjes klaarstaat
         initialiseerGeschiedenis(tossPoule);
+        
+        // Sorteer alle spelers (inclusief gasten) op niveau om evenwichtige banen te creëren
         tossPoule.sort((a, b) => a.niveau - b.niveau);
 
         let banenContainer = document.getElementById('overlay-banen-container');
@@ -327,12 +355,19 @@
         document.getElementById('overlay-ronde-teller').innerText = `Ronde ${rondeNummer}`;
 
         let baanNummer = 1;
+        // Loop nu door de volledig aangevulde lijst (die nu gegarandeerd 4, 8, 12, etc. lang is)
         for (let i = 0; i < tossPoule.length; i += 4) {
             let vierSpelers = tossPoule.slice(i, i + 4);
+            
+            // Stuur de 4 specifieke spelers voor deze baan naar het rekenmodel
             let opstelling = berekeneBaanOpties(vierSpelers[0], vierSpelers[1], vierSpelers[2], vierSpelers[3]);
 
-            let p1 = opstelling[0]; let p2 = opstelling[1]; let p3 = opstelling[2]; let p4 = opstelling[3];
+            let p1 = opstelling[0]; 
+            let p2 = opstelling[1]; 
+            let p3 = opstelling[2]; 
+            let p4 = opstelling[3];
 
+            // Sla de speelhistorie op (gasten slaan we over om matrix schoon te houden)
             if (!p1.naam.includes("Gast") && !p2.naam.includes("Gast")) {
                 geschiedenisMatrix[p1.naam][p2.naam] = (geschiedenisMatrix[p1.naam][p2.naam] || 0) + 1;
                 geschiedenisMatrix[p2.naam][p1.naam] = (geschiedenisMatrix[p2.naam][p1.naam] || 0) + 1;
@@ -342,11 +377,13 @@
                 geschiedenisMatrix[p4.naam][p3.naam] = (geschiedenisMatrix[p4.naam][p3.naam] || 0) + 1;
             }
 
+            // Schud de volgorde binnen de teams puur voor de visuele weergave op het scherm
             let team1Names = [p1.naam, p2.naam];
             let team2Names = [p3.naam, p4.naam];
             if (Math.random() > 0.5) team1Names.reverse();
             if (Math.random() > 0.5) team2Names.reverse();
 
+            // Render de baan met de twee unieke spelers per team
             banenContainer.innerHTML += `
                 <div class="court-title">Baan ${baanNummer}</div>
                 <div class="match-box">
